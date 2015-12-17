@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<accounts>
+    <utente>
+        <nome>Fabio</nome>
+        <cognome>Bianchi</cognome>
+        <username>fbianchi</username>
+        <tipoacc>Basic</tipoacc>
+        <skills>grafico</skills>
+        <lingue>arabo</lingue>
+        <studi>unive,unipd</studi>
+        <contatti>ament</contatti>
+        <password>qwe2</password>
+    </utente>
+    <utente>
+        <nome>Mario</nome>
+        <cognome>Verdi</cognome>
+        <username>mverdi</username>
+        <tipoacc>Executive</tipoacc>
+        <skills>videogamer</skills>
+        <lingue>tedesco,portoghese</lingue>
+        <studi>unitn</studi>
+        <contatti></contatti>
+        <password>qwe3</password>
+    </utente>
+    <utente>
+        <nome>Anna</nome>
+        <cognome>Qwerty</cognome>
+        <username>aqwrt</username>
+        <tipoacc>Business</tipoacc>
+        <skills>medico</skills>
+        <lingue>arabo,persiano</lingue>
+        <studi>unimi,unifi</studi>
+        <contatti>mverdi</contatti>
+        <password>qwe4</password>
+    </utente>
+    <utente>
+        <nome>Giovanni</nome>
+        <cognome>Mazzocchin</cognome>
+        <username>gmazzocc</username>
+        <tipoacc>Business</tipoacc>
+        <skills>studente</skills>
+        <lingue>tedesco,yiddish</lingue>
+        <studi>unipd</studi>
+        <contatti></contatti>
+        <password>qwe5</password>
+    </utente>
+</accounts>

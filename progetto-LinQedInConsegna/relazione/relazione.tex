@@ -1,0 +1,137 @@
+
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+
+
+\begin{document}
+\title{Relazione sul progetto di Programmazione ad oggetti}
+\author{Giovanni Mazzocchin, mat. 1071619}
+\maketitle
+
+\begin{abstract}
+Il software è stato sviluppato in linea con il design pattern MV (ModelView),mantenendo quasi sempre
+la separazione tra il codice logico e il codice dell'interfaccia grafica.
+Particolare attenzione e' stata prestata alla ricerca incrementale, che e' stata resa
+particolarmente estensibile tramite funtori polimorfi.
+\end{abstract}
+
+\section{Gerarchie di classi}
+\begin{itemize}
+	\item Gerarchia degli utenti (parte del Model)
+		\begin{itemize}
+		\renewcommand\labelitemi{-}
+			\item Le tre tipologie di account LinQedIn (Basic,Business ed Executive)
+				  sono modellate tramite una gerarchia di quattro classi secondo il seguente schema: \\*
+				  \textbf{\textit{Utente}} (classe base polimorfa e astratta, dichiarata in \texttt{"headers/utente.h"});\\*   
+				  \textbf{UtenteBasic} (classe concreta, eredita da Utente, dichiarata in \texttt{"headers/utente\char`_basic.h")}; \\*
+				  \textbf{UtenteBusiness} (classe concreta, eredita da UtenteBasic, dichiarata in \texttt{"headers/utente\char`_business.h")};\\*
+				  \textbf{UtenteExecutive} (classe concreta, eredita da UtenteBusiness, dichiarata in \texttt{"headers/utente\char`_executive.h")}. 
+		\end{itemize}
+	
+	\item Gerarchia dei funtori (parte del Model)
+		\begin{itemize}
+		\renewcommand\labelitemi{-}
+			\item La ricerca incrementale richiesta dalle specifiche è stata implementata con l'ausilio
+				  di una gerarchia di classi le cui istanze vengono utilizzate come funtori.\\*
+				  Anche in questo caso la gerarchia è composta da quattro classi, in modo da generare 
+				  una corrispondenza uno ad uno con le tipologie di account, secondo il seguente schema: \\*
+				  \textbf{\textit{OttieniInfos}} (classe base polimorfa e astratta, logicamente collegata alla classe 'Utente', dichiarata in \texttt{"headers/ottieni\char`_infos.h")};  \\*
+				  \textbf{EsisteUtente} (classe concreta, eredita da OttieniInfos, logicamente collegata alla classe 'UtenteBasic', dichiarata in \texttt{"headers/esiste\char`_utente.h")}; \\*
+				  \textbf{ProfiloCompletoDi} (classe concreta, eredita da EsisteUtente, logicamente collegata alla classe 'UtenteBusiness', dichiarata in \texttt{"headers/profilo\char`_completo\char`_di.h")}; \\*
+				  \textbf{OttieniAncheReteDi} (classe concreta, eredita da ProfiloCompletoDi, logicamente collegata alla classe 'UtenteExecutive', dichiarata in \texttt{"headers/ottieni\char`_anche\char`_rete\char`_di")}. \\*
+		\end{itemize}
+			
+	\item Gerarchia delle informazioni da visualizzare (parte della View)
+		\begin{itemize}
+		\renewcommand\labelitemi{-}
+			\item Nell'implementazione della ricerca incrementale è stata cruciale la realizzazione di una gerarchia
+				  che modella le informazioni da visualizzare in modo appunto 'incrementale'.\\*
+			      La gerarchia è composta da tre classi: \\*
+			      \textbf{InfoVisBasic} (classe base polimorfa e concreta, dichiarata in \texttt{"headers/infovis\char`_basic.h")}, permette di visualizzare l'informazione
+			      'l'utente cercato esiste/non esiste';\\*     
+			      \textbf{InfoVisBusiness} (classe concreta, eredita da InfoVisBasic, dichiarata \texttt{in "headers/infovis\char`_business.h")}, permette di visualizzare l'intero 
+			       profilo (eccetto la rete di contatti) dell'utente cercato.\\*
+			      \textbf{InfoVisExecutive} (classe concreta, eredita da InfoVisBusiness, dichiarata in \texttt{"headers/infovis\char`_executive.h")}, permette di visualizzare l'intero
+			        profilo (compresa la rete di contatti) dell'utente cercato.\\*
+		\end{itemize}
+	
+	\item Incapsulamento delle informazioni logiche (parte del Model)
+		\begin{itemize}
+		\renewcommand\labelitemi{-}
+			\item Le classi \textbf{Utente}, \textbf{Profilo} (dichiarata in \texttt{"headers/profilo.h"}) e \textbf{Info} (dichiarata in \texttt{"headers/info.h"}), 
+			le quali si occupano di gestire le informazioni sugli utenti,
+			sono collegate tra loro dalla relazione \textit{has a}, infatti \textbf{Utente} funge da \textit{wrapper} per \textbf{Profilo},
+			la quale a sua volta si comporta da wrapper per \textbf{Info}.
+		\end{itemize}
+	\item Caricamento dei dati in RAM (parte del Model)
+		\begin{itemize}
+		\renewcommand\labelitemi{-}
+			\item La classe \textbf{DB} (dichiarata nel file \texttt{"headers/db.h"}) si occupa del caricamento dei dati in memoria tramite il metodo \textit{load()}.
+			Gli utenti vengono caricati con il tipo adatto tramite il controllo sul tag \texttt{tipoacc} nel file XML.
+		\end{itemize}
+	
+\end{itemize}
+
+\section{Ricerca incrementale: descrizione dettagliata}   %insert the text
+\subsection{Contratto da soddisfare}
+L'utente di tipologia \textit{Basic} può ottenere l'informazione \textit{'l'utente cercato esiste/non esiste'};\\*
+l'utente di tipologia \textit{Business} può visualizzare il profilo completo (eccetto la rete di contatti) dell'utente cercato;\\*
+l'utente di tipologia \textit{Executive} può visualizzare il profilo completo (compresa la rete di contatti) dell'utente cercato.
+\subsection{Funzionamento}	%insert the text
+La catena di invocazioni parte dalla classe \textbf{ClientWidget} (parte della View,dichiarata in \texttt{"headers/client\char`_widget.h"}), nello slot \textit{mostraProfilo()}:
+tale slot invoca il metodo \textbf{LinqEdInClient}::\textit{ricercaNelDB()} (parte del Model). A questo punto entrano in gioco
+i funtori:\\*infatti \textbf{LinqEdInClient}::\textit{ricercaNelDB()} crea un puntatore polimorfo con tipo statico \textbf{OttieniInfos*}
+(base astratta della gerarchia di funtori) e tipo dinamico determinato dalla chiamata al metodo \textbf{Utente}::\textit{getFuntore()} (metodo virtuale di
+utente che ritorna un puntatore a funtore adatto alla tipologia di utente).Questo puntatore polimorfo viene così passato come parametro 
+al metodo \textbf{DB}::\textit{ricerca(OttieniInfos*...)} il quale finalmente utilizza il funtore.
+Sara' proprio l'overloading dell'operatore di chiamata a funzione (e conseguente overriding nelle sottoclassi, in quanto esso e' stato dichiarato \texttt{virtual}
+nella classe \textbf{OttieniInfos}) a causare la visualizzazione dei profili cercati tramite una chiamata ai costruttori di \textbf{InfoVisBasic}, \textbf{InfoVisBusiness} oppure di
+\textbf{InfoVisExecutive}.
+
+\section{Modalità di utilizzo del software}
+\subsection {Modalità 'cliente'}
+Tramite questa modalità l'utente del software agisce appunto da \textit{cliente LinQedIn}:
+se il login ha successo egli può visualizzare il proprio profilo, modificarne alcune parti e interrogare il 
+database di \textit{LinQedIn}.
+\subsection {Modalità 'amministratore'}
+L'utente in modalità \textit{amministratore} può modificare il database \textit{LinQedIn} aggiungendo
+nuovi utenti, rimuovendone, modificando la tipologia di account di un utente. Può ovviamente interrogare il database
+\textit{LinQedIn}.
+\subsection {Modalità 'simulazione cliente@amministratore'}
+Questa modalità implementa una sorta di interazione \textit{client-server} in quanto l'utente del software
+può agire sia da cliente sia da amministratore \textit{LinQedIn}. Ovviamente tutte le modifiche apportate dal
+cliente verranno rese pubbliche all'amministratore, e viceversa.
+
+\section{Gestione dei dati persitenti}
+\subsection {Struttura del database}
+I dati persistenti vengono salvati nel file \texttt{"data/db.xml"} (nella directory del progetto).
+Il file è in formato XML e viene letto e scritto da programma tramite le librerie Qt \textit{QXmlStreamReader}
+e \textit{QXmlStreamWriter}.
+
+\section{Interfaccia grafica}
+\subsection {Finestra di \textit{start}}
+La finestra di \textit{start} si apre all'avvio del programma e dà all'utente la possibilità di scegliere
+la modalità di utilizzo del software.
+\subsection {Finestra di \textit{login}}
+La finestra di login appare solamente se precedentemente sono state scelte le modalità \textit{cliente} o
+\textit{interazione cliente@amministratore}. 
+\subsection {Interfaccia cliente}
+L'interfaccia cliente permette all'utente che ha effettuato il login di visualizzare il proprio profilo (tramite delle \textit{QLineEdit}), di aggiungere contatti
+alla propria rete e di visualizzare i profili degli altri utenti \textit{LinQedIn} (secondo i privilegi della propria tipologia di account).
+Essa permette inoltre all'utente di modificare alcune parti del proprio profilo(precisamente i campi 'nome', 'cognome', 'skills', 'studi' e 'lingue', tramite le stesse \textit{QLineEdit}).
+\subsection {Interfaccia amministratore}
+Questa interfaccia permette all'amministratore \textit{LinQedIn} di visualizzare i profili completi degli utenti cercati, di cambiare la tipologia
+di account di un utente e di aggiungere nuovi utenti al database.
+
+\section{Compilare ed eseguire \textit{LinQedIn}}
+\subsection {}
+Spostarsi nella directory \texttt{sources\char`_makefile} (subdirectory della cartella \textit{LinQedInConsegna}) e lanciare da shell
+i comandi \texttt{make} e \texttt{make clean}. L'eseguibile generato avrà come nome \texttt{linqedin}.
+I login corretti sono i seguenti:   \\*
+\textbf{username}::::::::\textbf{password} \\*
+\texttt{fbianchi}::::::::::\texttt{qwe2}   \\*
+\texttt{mverdi}::::::::::::::\texttt{qwe3}   \\*
+\texttt{aqwrt}::::::::::::::::\texttt{qwe4}   \\*
+\texttt{gmazzocc}:::::::::::\texttt{qwe5}.
+\end{document}
