@@ -1,4 +1,5 @@
 #include "../headers/admin_widget.h"
+//prova branching
 //STRUTTURA FINESTRA DELL'ADMIN
         /*PARTE SINISTRA*/                                /*PARTE DESTRA*/
 /* QLineEdit per l'inserimento di uno username      Cerca in LinQedIn (QPushButton)        Rimuovi da LinQedIn (QPushButton)
